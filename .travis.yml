@@ -10,12 +10,10 @@ matrix:
   fast_finish: true
 
 before_script:
+  - rm -f composer.phar
   - wget http://getcomposer.org/composer.phar
   - php composer.phar install --dev --no-interaction
 
-script:
-  - mkdir -p build/logs
-  - phpunit --coverage-text --coverage-clover=coverage.clover
+script: vendor/bin/phpunit --configuration phpunit.xml --coverage-text --coverage-clover=coverage.clover
 
-after_script:
-  - php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover
+after_script: vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover
