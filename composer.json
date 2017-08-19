@@ -19,7 +19,7 @@
 	"require" : {
 		"php" : ">=7.0",
 		"nkey/phpgenerics" : "dev-master",
-		"webmozart/json" : "~1"
+		"webmozart/json" : "~1.2"
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "~6",
