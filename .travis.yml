@@ -1,0 +1,21 @@
+language: php
+
+php:
+  - 7.0
+  - 7.1
+
+sudo: false
+
+matrix:
+  fast_finish: true
+
+before_script:
+  - wget http://getcomposer.org/composer.phar
+  - php composer.phar install --dev --no-interaction
+
+script:
+  - mkdir -p build/logs
+  - phpunit --coverage-text --coverage-clover=coverage.clover
+
+after_script:
+  - php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover

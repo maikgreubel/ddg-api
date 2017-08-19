@@ -1,0 +1,38 @@
+{
+	"keywords" : [
+		"DuckDuckGo"
+	],
+	"autoload" : {
+		"psr-4" : {
+			"Nkey\\DDG\\API\\" : "src"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"Nkey\\DDG\\API\\Tests\\" : "tests"
+		}
+	},
+	"name" : "nkey/ddg-api",
+	"type" : "library",
+	"description" : "DuckDuckGo API client",
+	"license" : "Apache-2.0",
+	"require" : {
+		"php" : ">=7.0",
+		"nkey/phpgenerics" : "dev-master",
+		"webmozart/json" : "~1"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "~6",
+		"scrutinizer/ocular" : "~1"
+	},
+	"support" : {
+		"email" : "greubel@nkey.de"
+	},
+	"authors" : [{
+			"name" : "Maik Greubel",
+			"email" : "greubel@nkey.de",
+			"homepage" : "https://nkey.de",
+			"role" : "Maintainer"
+		}
+	]
+}
