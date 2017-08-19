@@ -38,7 +38,7 @@ class JsonProviderTest extends TestCase
      */
     public function testParse()
     {
-        $f = new FileInputStream("test-data.json");
+        $f = new FileInputStream(dirname(__FILE__) . "/test-data.json");
         $payload = $f->read(51200);
         
         $parser = new QueryResultParser();

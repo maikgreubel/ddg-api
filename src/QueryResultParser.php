@@ -35,23 +35,33 @@ class QueryResultParser
         $ref = new ReflectionClass($result);
         $methods = $ref->getMethods(ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
-            assert($method instanceof ReflectionMethod);
-            
-            if (substr($method->getName(), 0, 3) === 'set') {
-                $propertyName = substr($method->getName(), 3);
+            if (($propertyName = $this->getPropertyName($method))) {
                 if ($propertyName === 'Meta') {
                     $result = $this->parseMeta($result, $json->meta);
                     continue;
                 }
-                if (property_exists($json, $propertyName)) {
-                    $property = $json->$propertyName;
-                    $method->invoke($result, $property);
-                }
+                $this->assignPropertyValue($method, $result, $json, $propertyName);
             }
         }
         
         $result = $this->parseRelatedTopics($result, $json->RelatedTopics);
         return $result;
+    }
+    
+    private function assignPropertyValue(ReflectionMethod $method, $destObject, $object, $propertyName) {
+        if (property_exists($object, $propertyName)) {
+            $property = $object->$propertyName;
+            $method->invoke($destObject, $property);
+        }
+    }
+    
+    private function getPropertyName(ReflectionMethod $method) {
+        $propertyName = false;
+        if (substr($method->name, 0, 3) === 'set') {
+            $propertyName = substr($method->name, 3);
+        }
+        
+        return $propertyName;
     }
 
     private function parseRelatedTopics(QueryResult $result, $relatedTopics)
@@ -61,20 +71,12 @@ class QueryResultParser
             $ref = new ReflectionClass($topic);
             $methods = $ref->getMethods(ReflectionMethod::IS_PUBLIC);
             foreach ($methods as $method) {
-                assert($method instanceof ReflectionMethod);
-                
-                if (substr($method->getName(), 0, 3) === 'set') {
-                    $propertyName = substr($method->getName(), 3);
-                    
+                if (($propertyName = $this->getPropertyName($method))) {
                     if ($propertyName === 'Icon') {
                         $topic = $this->parseIcon($topic, $relatedTopic->Icon);
                         continue;
                     }
-                    
-                    if (property_exists($relatedTopic, $propertyName)) {
-                        $property = $relatedTopic->$propertyName;
-                        $method->invoke($topic, $property);
-                    }
+                    $this->assignPropertyValue($method, $topic, $relatedTopic, $propertyName);
                 }
             }
             $result->addRelatedTopic($topic);
@@ -90,10 +92,7 @@ class QueryResultParser
         $ref = new ReflectionClass($ico);
         $methods = $ref->getMethods(ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
-            assert($method instanceof ReflectionMethod);
-            
-            if (substr($method->getName(), 0, 3) === 'set') {
-                $propertyName = substr($method->getName(), 3);
+            if (($propertyName = $this->getPropertyName($method))) {
                 if (property_exists($icon, $propertyName)) {
                     $property = $icon->$propertyName;
                     
