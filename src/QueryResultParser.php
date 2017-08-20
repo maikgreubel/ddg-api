@@ -3,7 +3,7 @@ namespace Nkey\DDG\API;
 
 use Nkey\DDG\API\Model\Icon;
 use Nkey\DDG\API\Model\QueryResult;
-use Nkey\DDG\API\Model\RelatedTopic;
+use Nkey\DDG\API\Model\Result;
 use Webmozart\Json\JsonDecoder;
 use ReflectionClass;
 use ReflectionMethod;
@@ -44,7 +44,9 @@ class QueryResultParser
             }
         }
         
-        $result = $this->parseRelatedTopics($result, $json->RelatedTopics);
+        $result = $this->parseResults($result, $json->RelatedTopics, false);
+        $result = $this->parseResults($result, $json->Results, true);
+        
         return $result;
     }
     
@@ -64,28 +66,33 @@ class QueryResultParser
         return $propertyName;
     }
 
-    private function parseRelatedTopics(QueryResult $result, $relatedTopics)
+    private function parseResults(QueryResult $queryResult, $results, bool $isResult)
     {
-        foreach ($relatedTopics as $relatedTopic) {
-            $topic = new RelatedTopic();
-            $ref = new ReflectionClass($topic);
+        foreach ($results as $result) {
+            $res = new Result();
+            $ref = new ReflectionClass($res);
             $methods = $ref->getMethods(ReflectionMethod::IS_PUBLIC);
             foreach ($methods as $method) {
                 if (($propertyName = $this->getPropertyName($method))) {
                     if ($propertyName === 'Icon') {
-                        $topic = $this->parseIcon($topic, $relatedTopic->Icon);
+                        $res = $this->parseIcon($res, $result->Icon);
                         continue;
                     }
-                    $this->assignPropertyValue($method, $topic, $relatedTopic, $propertyName);
+                    $this->assignPropertyValue($method, $res, $result, $propertyName);
                 }
             }
-            $result->addRelatedTopic($topic);
+            if( $isResult ) {
+                $queryResult->addResult($res);
+            }
+            else {
+                $queryResult->addRelatedTopic($res);
+            }
         }
         
-        return $result;
+        return $queryResult;
     }
 
-    private function parseIcon(RelatedTopic $topic, $icon): RelatedTopic
+    private function parseIcon(Result $result, $icon): Result
     {
         $ico = new Icon();
         
@@ -104,9 +111,9 @@ class QueryResultParser
             }
         }
         
-        $topic->setIcon($ico);
+        $result->setIcon($ico);
         
-        return $topic;
+        return $result;
     }
 
     private function parseMeta(QueryResult $result, $meta): QueryResult

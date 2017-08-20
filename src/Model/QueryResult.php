@@ -221,7 +221,7 @@ class QueryResult
      */
     public function getMeta(): Metadata
     {
-        return $this->meta;
+        return $this->meta == null ? new Metadata() : $this->meta;
     }
 
     /**
@@ -530,7 +530,7 @@ class QueryResult
      */
     public function getResults(): array
     {
-        return $this->results;
+        return $this->results == null ? array() : $this->results;
     }
 
     /**
@@ -546,10 +546,10 @@ class QueryResult
     
     /**
      * 
-     * @param RelatedTopic $topic
+     * @param Result $topic
      * @return QueryResult
      */
-    public function addRelatedTopic(RelatedTopic $topic): QueryResult
+    public function addRelatedTopic(Result $topic): QueryResult
     {
         $this->relatedTopics[] = $topic;
         return $this;
