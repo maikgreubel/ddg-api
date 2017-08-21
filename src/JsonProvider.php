@@ -16,13 +16,14 @@ use Psr\Log\NullLogger;
  */
 class JsonProvider implements LoggerAwareInterface
 {
+
     /**
      * Logger instance
-     * 
+     *
      * @var LoggerInterface
      */
     private $logger;
-    
+
     /**
      * Timeout in seconds
      *
@@ -35,7 +36,7 @@ class JsonProvider implements LoggerAwareInterface
      * @var HttpClient
      */
     private $httpClient;
-    
+
     public function __construct()
     {
         $this->logger = new NullLogger();
@@ -62,14 +63,10 @@ class JsonProvider implements LoggerAwareInterface
     public function query(string $query): string
     {
         try {
+            $this->createHttpClient($query);
             
-            $this->httpClient = new HttpClient($this->provideUrl($query));
-            $this->httpClient->setTimeout($this->timeout);
-            $this->httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36');
-            $this->httpClient->setHeader('Accept-Encoding', 'identity'); // Currently there is a bug in HttpClient for passing buf to gzdecode()
-            $this->httpClient->setHeader('Connection', 'close');
-            $this->httpClient->request('GET');
             $response = "";
+            $this->httpClient->request('GET');
             
             while ($this->httpClient->getPayload()->ready()) {
                 $response .= $this->httpClient->getPayload()->read($this->httpClient->getPayload()
@@ -88,6 +85,15 @@ class JsonProvider implements LoggerAwareInterface
         }
     }
 
+    private function createHttpClient(string $query)
+    {
+        $this->httpClient = new HttpClient($this->provideUrl($query));
+        $this->httpClient->setTimeout($this->timeout);
+        $this->httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36');
+        $this->httpClient->setHeader('Accept-Encoding', 'identity'); // Currently there is a bug in HttpClient for passing buf to gzdecode()
+        $this->httpClient->setHeader('Connection', 'close');
+    }
+
     /**
      * Provide an URL object out of given duckduckgo query
      *
@@ -100,14 +106,14 @@ class JsonProvider implements LoggerAwareInterface
         
         return $url;
     }
-    
+
     /**
      * Set the logger
+     * 
      * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
-
 }
