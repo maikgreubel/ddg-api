@@ -1,7 +1,7 @@
 <?php
 namespace Nkey\DDG\API;
 
-use Generics\Client\HttpClient;
+use Generics\Client\HttpsClient;
 use Generics\Socket\Url;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
@@ -33,7 +33,7 @@ class JsonProvider implements LoggerAwareInterface
 
     /**
      *
-     * @var HttpClient
+     * @var HttpsClient
      */
     private $httpClient;
 
@@ -87,7 +87,7 @@ class JsonProvider implements LoggerAwareInterface
 
     private function createHttpClient(string $query)
     {
-        $this->httpClient = new HttpClient($this->provideUrl($query));
+        $this->httpClient = new HttpsClient($this->provideUrl($query));
         $this->httpClient->setTimeout($this->timeout);
         $this->httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36');
         $this->httpClient->setHeader('Accept-Encoding', 'identity'); // Currently there is a bug in HttpClient for passing buf to gzdecode()
@@ -102,7 +102,7 @@ class JsonProvider implements LoggerAwareInterface
      */
     private function provideUrl(string $query): Url
     {
-        $url = new Url(sprintf("http://api.duckduckgo.com/?q=%s&format=json", urlencode($query)));
+        $url = new Url(sprintf("https://api.duckduckgo.com/?q=%s&format=json", urlencode($query)));
         
         return $url;
     }
