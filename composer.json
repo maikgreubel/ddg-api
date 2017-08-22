@@ -28,6 +28,11 @@
 	"support" : {
 		"email" : "greubel@nkey.de"
 	},
+	"extra" : {
+		"branch-alias" : {
+			"dev-master" : "1.1-dev"
+		}
+	},
 	"authors" : [{
 			"name" : "Maik Greubel",
 			"email" : "greubel@nkey.de",
